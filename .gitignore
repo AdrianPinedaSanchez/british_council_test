@@ -1,0 +1,28 @@
+# Virtual environments
+bea_phase1_env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Trained model weights (large files, reproduce via training scripts)
+bea2026st/models/exp*/
+
+# Logs
+bea2026st/logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Hugging Face cache
+.cache/

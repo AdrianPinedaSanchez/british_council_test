@@ -1,0 +1,7 @@
+track,split,model,L1,rmse,pearson
+closed,dev,baseline_closed_cn,cn,1.1748474074893016,0.7355269731583322
+closed,dev,baseline_closed_de,de,1.3282551918812926,0.7530299049691511
+closed,dev,baseline_closed_es,es,1.3569219828224213,0.7484207308555738
+open,dev,baseline_open_xx,es,1.2060841866514214,0.7873063484454521
+open,dev,baseline_open_xx,de,1.1486658737533606,0.800390009388446
+open,dev,baseline_open_xx,cn,1.0213964262014545,0.8042396463775818
