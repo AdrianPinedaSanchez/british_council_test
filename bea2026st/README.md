@@ -198,7 +198,7 @@ python run_pipeline.py --models_to_run baseline_closed_cn baseline_closed_es
 * `--models_to_run` Baseline models to include in pipeline  (`baseline_closed_es`, `baseline_closed_de`, `baseline_closed_cn` or `baseline_open_xx`; default: all models).
 * `--model_params_path` Path to model parameters CSV (default: `models/model_parameters.csv`).
 * `--dataset_split` Dataset split for prediction/evaluation (`dev`, `test`, or `both`; default: `dev`).
-* `--seed` Random seed for reproducibility (default: `10`).
+* `--seed` Random seed for reproducibility (default: `42`).
 * `--verbose`: Enable verbose logging for debugging; prints DEBUG messages in addition to INFO (default: `False`).
 
 ---
@@ -242,3 +242,36 @@ predictions/{track}/{dataset_split}/{L1}/{your_model_name}_preds.csv
 
 * Must follow naming convention `{your_model_name}_preds.csv` 
 * Must include the columns: `item_id` and `prediction`.
+
+---
+
+## Extended Experiments: Notebooks
+
+Beyond the baseline pipeline, two Jupyter notebooks extend the analysis:
+
+### `EDA.ipynb` — Exploratory Data Analysis
+- Target variable distribution by L1
+- Part-of-speech analysis
+- Word-level feature correlations
+- Cross-L1 comparison (parallel items)
+- Baseline error analysis
+
+### `phase1_model_improvement.ipynb` — Model Improvement Pipeline
+A comprehensive notebook implementing two phases of improvement:
+
+**Phase 1 — Model Swap & Hyperparameter Optimization (§0–§5)**
+- 6 experiments: XLM-R Large, mDeBERTa-v3, BETO (es), GBERT (de), Chinese-RoBERTa (cn), tuned XLM-R base
+- Fine-tuning, prediction, evaluation vs baselines
+
+**Phase 2 — Linguistic Feature Engineering & Integration (§6–§9)**
+- 25 linguistically-motivated features: word frequency, polysemy, consonant clusters, rhotacism, silent letters, L1-specific phonological difficulty, Levenshtein distance (cognates), morphological complexity, cosine distance, syntactic overlap
+- **Strategy A**: Text-serialized features → transformer fine-tuning
+- **Strategy B**: Hybrid model — transformer [CLS] embedding + tabular features with custom regression head
+- **Strategy C**: XGBoost/LightGBM on tabular features + ensemble with transformer
+- 5-fold cross-validation for robustness evaluation
+- Test set prediction pipeline
+
+**Additional dependencies** (beyond `environment.yml`):
+```bash
+pip install nltk sentence-transformers editdistance xgboost lightgbm seaborn
+```

@@ -13,3 +13,11 @@ dependencies:
   - pandas=3.0.0
   - scipy=1.17.0
   - scikit-learn=1.8.0
+  - matplotlib>=3.8
+  - seaborn>=0.13
+  - nltk>=3.8
+  - pip:
+    - sentence-transformers>=2.7
+    - xgboost>=2.0
+    - lightgbm>=4.3
+    - editdistance>=0.6
