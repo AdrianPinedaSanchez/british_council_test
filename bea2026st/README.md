@@ -46,6 +46,10 @@ baseline_open_xx cn 1.021    0.804
 │   │   ├── es/kvl_shared_task_es_dev.csv
 │   │   ├── de/kvl_shared_task_de_dev.csv
 │   │   ├── cn/kvl_shared_task_cn_dev.csv
+│   ├── test/
+│   │   ├── es/kvl_shared_task_es_test.csv
+│   │   ├── de/kvl_shared_task_de_test.csv
+│   │   ├── cn/kvl_shared_task_cn_test.csv
 ├── models/
 │   ├── baseline_closed_es/
 │   ├── baseline_closed_de/
@@ -75,7 +79,7 @@ baseline_open_xx cn 1.021    0.804
 └── README.md
 ```
 
-* `data/` Provided datasets (CSV files), split by dataset type (`train`, `dev`) and L1 (`es`, `de`, `cn`).
+* `data/` Provided datasets (CSV files), split by dataset type (`train`, `dev`, `test`) and L1 (`es`, `de`, `cn`).
 * `models/` Folders for fine-tuned baseline models. There are three separate model folders for the `closed` track and one for the `open` track that is trained jointly on all L1s. Due to their size, models must be downloaded from the [Hugging Face Hub](https://huggingface.co/lucyskidmore/models) (instructions to follow).
   * `model_parameters.csv` - Metadata and hyperparameters for each baseline model.
 * `predictions/` Model predictions (CSV files) organized by track type (`open`, `closed`), dataset split (`train`, `dev`), and L1 (`es`, `de`, `cn`).
@@ -104,7 +108,7 @@ The training, development and test datasets are provided as a set of CSV files, 
 * `en_target_clue` A partial-spelling clue of the English target word.
 * `L1_source_word` The corresponding L1 source word(s).
 * `L1_context` The L1 contextualising prompt.
-* `GLMM_score` The GLMM difficulty estimate for the vocabulary test item, as reported by [Schmitt et al. (2024)](https://www.britishcouncil.org/research-insight/knowledge-based-vocabulary-lists), where a **lower score indicates a more difficult word**. This is the target value that will be predicted.
+* `GLMM_score` The GLMM difficulty estimate for the vocabulary test item, as reported by [Schmitt et al. (2024)](https://www.britishcouncil.org/research-insight/knowledge-based-vocabulary-lists), where a **lower score indicates a more difficult word**. This is the target value that will be predicted. **Note:** The `GLMM_score` is not provided for the test datasets. 
 ---
 
 ## Model Parameters File
@@ -167,7 +171,7 @@ By default, this runs the `--download`, `--predict` `--evaluate` steps sequentia
 `predictions/{track}/{dataset_split}/{L1}/{model_name}_preds.csv`.
 
 3. **Evaluate**: Predictions are compared to the dataset labels. Results are saved as a CSV to:
-`results/results_summary_{dataset_split}.csv` and also printed to the console.
+`results/results_summary_{dataset_split}.csv` and also printed to the console. **Note:** Evaluate cannot be run on the test dataset as the `GLMM_score` is not provided.
 
 **Run individual steps:**
 
@@ -198,7 +202,7 @@ python run_pipeline.py --models_to_run baseline_closed_cn baseline_closed_es
 * `--models_to_run` Baseline models to include in pipeline  (`baseline_closed_es`, `baseline_closed_de`, `baseline_closed_cn` or `baseline_open_xx`; default: all models).
 * `--model_params_path` Path to model parameters CSV (default: `models/model_parameters.csv`).
 * `--dataset_split` Dataset split for prediction/evaluation (`dev`, `test`, or `both`; default: `dev`).
-* `--seed` Random seed for reproducibility (default: `42`).
+* `--seed` Random seed for reproducibility (default: `10`).
 * `--verbose`: Enable verbose logging for debugging; prints DEBUG messages in addition to INFO (default: `False`).
 
 ---
@@ -242,36 +246,3 @@ predictions/{track}/{dataset_split}/{L1}/{your_model_name}_preds.csv
 
 * Must follow naming convention `{your_model_name}_preds.csv` 
 * Must include the columns: `item_id` and `prediction`.
-
----
-
-## Extended Experiments: Notebooks
-
-Beyond the baseline pipeline, two Jupyter notebooks extend the analysis:
-
-### `EDA.ipynb` — Exploratory Data Analysis
-- Target variable distribution by L1
-- Part-of-speech analysis
-- Word-level feature correlations
-- Cross-L1 comparison (parallel items)
-- Baseline error analysis
-
-### `phase1_model_improvement.ipynb` — Model Improvement Pipeline
-A comprehensive notebook implementing two phases of improvement:
-
-**Phase 1 — Model Swap & Hyperparameter Optimization (§0–§5)**
-- 6 experiments: XLM-R Large, mDeBERTa-v3, BETO (es), GBERT (de), Chinese-RoBERTa (cn), tuned XLM-R base
-- Fine-tuning, prediction, evaluation vs baselines
-
-**Phase 2 — Linguistic Feature Engineering & Integration (§6–§9)**
-- 25 linguistically-motivated features: word frequency, polysemy, consonant clusters, rhotacism, silent letters, L1-specific phonological difficulty, Levenshtein distance (cognates), morphological complexity, cosine distance, syntactic overlap
-- **Strategy A**: Text-serialized features → transformer fine-tuning
-- **Strategy B**: Hybrid model — transformer [CLS] embedding + tabular features with custom regression head
-- **Strategy C**: XGBoost/LightGBM on tabular features + ensemble with transformer
-- 5-fold cross-validation for robustness evaluation
-- Test set prediction pipeline
-
-**Additional dependencies** (beyond `environment.yml`):
-```bash
-pip install nltk sentence-transformers editdistance xgboost lightgbm seaborn
-```

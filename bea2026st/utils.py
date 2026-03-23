@@ -1,4 +1,5 @@
 # utils.py
+import random
 import gc
 import logging
 import csv
